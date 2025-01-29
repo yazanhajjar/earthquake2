@@ -1,15 +1,19 @@
 import 'package:earthquake_protection/models/the_question.dart';
+import 'package:earthquake_protection/providers/languagenumber.dart';
 import 'package:earthquake_protection/screens/quizscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Earthquakequiz extends StatelessWidget {
+class Earthquakequiz extends ConsumerWidget {
   const Earthquakequiz({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Quizscreen(
-      title: 'Earthquake Quiz',
-      question: earthquakeQuestion,
+  Widget build(BuildContext context, WidgetRef ref) {
+    int languagenumber = ref.read(languagenumberProvider);
+    return Quizscreen(
+      title: languagenumber == 0 ? 'Earthquake Quiz' : 'اختبار الزلزال',
+      question:
+          languagenumber == 0 ? earthquakeQuestion : earthquakeQuestionarabic,
     );
   }
 }

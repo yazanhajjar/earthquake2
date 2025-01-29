@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:earthquake_protection/models/markers.dart';
+import 'package:earthquake_protection/providers/language.dart';
 import 'package:earthquake_protection/providers/markers.dart';
+import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -64,6 +66,8 @@ class _MapscreenState extends ConsumerState<Mapscreen> {
 
   @override
   Widget build(BuildContext context) {
+    Map thetext = ref.watch(languageProvider);
+        int size = ref.watch(textsizeProvider);
     List<Marker> markers = ref.watch(markersProvider);
     return Scaffold(
       body: Column(
@@ -76,25 +80,26 @@ class _MapscreenState extends ConsumerState<Mapscreen> {
               myLocationButtonEnabled: true,
             ),
           ),
-          Container(color: Theme.of(context).colorScheme.secondaryFixed,
-            child: const Row(
+          Container(
+            color: Theme.of(context).colorScheme.secondaryFixed,
+            child: Row(
               spacing: 10,
               children: [
                 Icon(
                   Icons.location_on_sharp,
                   color: Colors.deepPurpleAccent,
                 ),
-                Text('Your location'),
+                Expanded(child: Text(thetext['Your location'],style: TextStyle(fontSize: 13+size.toDouble()),)),
                 Icon(
                   Icons.location_on_sharp,
                   color: Colors.red,
                 ),
-                Text('Earthquake'),
+                Expanded(child: Text(thetext['Earthquake'],style: TextStyle(fontSize: 13+size.toDouble()),)),
                 Icon(
                   Icons.location_on_sharp,
                   color: Colors.green,
                 ),
-                Text('Emergency'),
+                Expanded(child: Text(thetext['Emergency'],style: TextStyle(fontSize: 13+size.toDouble()),)),
               ],
             ),
           )

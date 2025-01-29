@@ -1,8 +1,8 @@
-// ignore_for_file: file_names
-
 import 'package:earthquake_protection/models/emergencylist.dart';
+import 'package:earthquake_protection/providers/language.dart';
 import 'package:earthquake_protection/providers/markers.dart';
 import 'package:earthquake_protection/providers/pagenumber.dart';
+import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,11 +12,13 @@ class EmergencyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    Map thetext = ref.read(languageProvider);
+    int size = ref.read(textsizeProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
-        title: const Text(
-          'Emergency Places',
+        title: Text(
+          thetext['Emergency Places'],
           style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
         ),
       ),
@@ -75,9 +77,9 @@ class EmergencyScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   e.name,
-                                  style: const TextStyle(
+                                  style:  TextStyle(
                                     color: Colors.white,
-                                    fontSize: 24,
+                                    fontSize: 24+size.toDouble(),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -86,17 +88,17 @@ class EmergencyScreen extends ConsumerWidget {
                                   children: [
                                     Text(
                                       e.location,
-                                      style: const TextStyle(
+                                      style:  TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 16+size.toDouble(),
                                       ),
                                     ),
                                     const SizedBox(width: 16),
                                     Text(
                                       'phone: ${e.phone}',
-                                      style: const TextStyle(
+                                      style:  TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 16+size.toDouble(),
                                       ),
                                     ),
                                   ],

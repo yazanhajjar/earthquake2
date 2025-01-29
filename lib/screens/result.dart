@@ -1,11 +1,14 @@
 import 'package:earthquake_protection/models/the_question.dart';
+import 'package:earthquake_protection/providers/languagenumber.dart';
+import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Resultscreen extends StatelessWidget {
-  const Resultscreen({super.key, required this.answers, required this.questions});
+class Resultscreen extends ConsumerWidget {
+  const Resultscreen(
+      {super.key, required this.answers, required this.questions});
   final List<String> answers;
-  final List<Question> questions ;
-
+  final List<Question> questions;
 
   get summary {
     List<Map<String, Object>> summaryresult = [];
@@ -22,7 +25,7 @@ class Resultscreen extends StatelessWidget {
 
   get numcorrect {
     int num = 0;
-    for (int i = 0; i < questions.length ; i++) {
+    for (int i = 0; i < questions.length; i++) {
       if (questions[i].answer[0] == answers[i]) {
         num++;
       }
@@ -31,30 +34,38 @@ class Resultscreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    int languagenumber = ref.read(languagenumberProvider);
+        int size=ref.read(textsizeProvider);
+
+
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            'The Result',
-            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 30),
+          title: Text(
+            languagenumber == 0 ? 'The Result' : 'النتيجة',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
             textAlign: TextAlign.center,
           ),
           backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('You answerd $numcorrect correct of ${questions.length} ',textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 30, fontWeight: FontWeight.bold)),
+              Text(
+                  languagenumber == 0
+                      ? 'You answerd $numcorrect correct of ${questions.length} '
+                      : 'لقد أجبت بشكل صحيح على $numcorrect من ${questions.length}',
+                  textAlign: TextAlign.center,
+                  style:  TextStyle(
+                      fontSize: 30+size.toDouble(), fontWeight: FontWeight.bold)),
               ...summary.map((e) => Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(30)),
                       color: e['index'] % 2 == 0
                           ? Theme.of(context).colorScheme.onPrimaryFixedVariant
-                          :  Theme.of(context).colorScheme.onPrimaryFixed,
+                          : Theme.of(context).colorScheme.onPrimaryFixed,
                     ),
                     margin: const EdgeInsets.all(10),
                     padding: const EdgeInsets.all(10),
@@ -67,32 +78,41 @@ class Resultscreen extends StatelessWidget {
                           child: Text(
                             e['index'].toString(),
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white),
+                            style:  TextStyle(color: Colors.white,fontSize: 15+size.toDouble()),
                           ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              'The question: ${e['question']}',
+                              languagenumber == 0
+                                  ? 'The question : ${e['question']}'
+                                  : 'السؤال : ${e['question']}  ',
                               style: TextStyle(
-                                  fontSize: 22,
-                                  color: e['index'] % 2 != 0
-                                      ? const Color.fromARGB(255, 113, 113, 113)
-                                      : const Color.fromARGB(255, 5, 4, 4),
+                                  fontSize: 22+size.toDouble(),
+                                  color: Theme.of(context).colorScheme.onSecondary,
+                                  // color: e['index'] % 2 != 0
+                                  //     ? const Color.fromARGB(255, 113, 113, 113)
+                                  //     : const Color.fromARGB(255, 5, 4, 4),
                                   fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 10),
-                            Text('The correct Answer : ${e['correctAnswer']}',
-                                style: const TextStyle(
-                                    fontSize: 20,
+                            Text(
+                                languagenumber == 0
+                                    ? 'The correct Answer : ${e['correctAnswer']}'
+                                    : 'الإجابة الصحيحة : ${e['correctAnswer']}',
+                                style:  TextStyle(
+                                    fontSize: 20+size.toDouble(),
                                     color: Color.fromARGB(255, 252, 234, 175)),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 10),
-                            Text('your Answer : ${e['userAnswer']}',
-                                style: const TextStyle(
-                                    fontSize: 20, color: Colors.white),
+                            Text(
+                                languagenumber == 0
+                                    ? 'your Answer : ${e['userAnswer']}'
+                                    : 'إجابتك: ${e['userAnswer']}',
+                                style:  TextStyle(
+                                    fontSize: 20+size.toDouble(), color: Colors.white),
                                 textAlign: TextAlign.center),
                           ],
                         ),
@@ -110,9 +130,11 @@ class Resultscreen extends StatelessWidget {
                 ),
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(40, 10, 40, 10),
-                  child: const Text(
-                    'Go to home page',
-                    style: TextStyle(fontSize: 30, color: Colors.white),
+                  child: Text(
+                    languagenumber == 0
+                        ? 'Go to home page'
+                        : 'العودة للصفحة الرئيسية',
+                    style: TextStyle(fontSize: 27, color: Colors.white),
                   ),
                 ),
               )
@@ -123,4 +145,3 @@ class Resultscreen extends StatelessWidget {
     );
   }
 }
-

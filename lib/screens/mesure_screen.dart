@@ -1,18 +1,21 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:earthquake_protection/providers/language.dart';
+import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:sensors_plus/sensors_plus.dart';
 
-class MesureScreen extends StatefulWidget {
+class MesureScreen extends ConsumerStatefulWidget {
   const MesureScreen({super.key});
 
   @override
-  State<MesureScreen> createState() => _MesureScreenState();
+  ConsumerState<MesureScreen> createState() => _MesureScreenState();
 }
 
-class _MesureScreenState extends State<MesureScreen> {
+class _MesureScreenState extends ConsumerState<MesureScreen> {
   static const maxvalue = 30;
   int second = maxvalue;
   Timer? timer;
@@ -22,8 +25,7 @@ class _MesureScreenState extends State<MesureScreen> {
   double force = 0;
   double maxforce = 0;
   int counter = 0;
-StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
-
+  StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
 
   void _startTimer() {
     maxforce = 0;
@@ -72,8 +74,9 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
     super.initState();
     counter = 0;
     maxforce = 0;
-    _gyroscopeSubscription=gyroscopeEventStream(samplingPeriod: Durations.short4)
-        .listen((GyroscopeEvent event) {
+    _gyroscopeSubscription =
+        gyroscopeEventStream(samplingPeriod: Durations.short4)
+            .listen((GyroscopeEvent event) {
       setState(() {
         x = event.x;
         y = event.y;
@@ -81,18 +84,22 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
       });
     });
   }
+
   @override
   void dispose() {
     _gyroscopeSubscription?.cancel();
-    super.dispose();//اتذكر جرب الكود بعد هادا التعديل
+    super.dispose(); //اتذكر جرب الكود بعد هادا التعديل
   }
 
   @override
   Widget build(BuildContext context) {
+    Map thetext = ref.read(languageProvider);
+        int size=ref.read(textsizeProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Earthquake mesuring',
+        title: Text(
+          thetext['Earthquake mesuring'],
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
         ),
         backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
@@ -106,12 +113,12 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'To get good result but the phone on solid place and press on Start',
+                thetext['mesurephrase'],
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.primaryFixed),
+                    fontSize: 20+size.toDouble(),
+                    color: Theme.of(context).colorScheme.scrim),
               ),
             ),
             const SizedBox(
@@ -125,11 +132,11 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
                   children: [
                     CircularProgressIndicator(
                       value: second / maxvalue,
-                      valueColor: const AlwaysStoppedAnimation(
-                          Color.fromARGB(255, 52, 52, 51)),
-                      color: const Color.fromARGB(255, 52, 52, 51),
+                      valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).colorScheme.scrim),
+                      color: Colors.white,
                       backgroundColor:
-                          Theme.of(context).colorScheme.primaryFixed,
+                          Theme.of(context).colorScheme.onSecondary,
                       strokeWidth: 12,
                     ),
                     Center(
@@ -142,8 +149,7 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
                               )
                             : Icon(
                                 Icons.done,
-                                color:
-                                    Theme.of(context).colorScheme.primaryFixed,
+                                color: Theme.of(context).colorScheme.scrim,
                                 size: 100,
                               )),
                   ],
@@ -156,24 +162,25 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
                     onPressed: stoptimer,
                     style: ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.primaryFixed)),
+                            Theme.of(context).colorScheme.secondaryFixedDim)),
                     child: Text(
-                      'End mesuring',
+                      thetext['End mesuring'],
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimaryFixed,
-                          fontWeight: FontWeight.bold),
+                          color: Theme.of(context).colorScheme.onSecondaryFixed,
+                          fontWeight: FontWeight.bold,fontSize: 20+size.toDouble()),
                     ),
                   )
                 : ElevatedButton(
                     style: ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.primaryFixed)),
+                            Theme.of(context).colorScheme.secondaryFixedDim)),
                     onPressed: _startTimer,
-                    child: Text('Start mesuring',
+                    child: Text(thetext['Start mesuring'],
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimaryFixed,
+                            color:
+                                Theme.of(context).colorScheme.onSecondaryFixed,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20))),
+                            fontSize: 20+size.toDouble()))),
             const SizedBox(
               height: 15,
             ),
@@ -202,10 +209,15 @@ StreamSubscription<GyroscopeEvent>? _gyroscopeSubscription;
               ),
             if (!isrunning && counter != 0)
               Text(
-                '''The Forse of earthquake
+                thetext['languagenumber'] == '1'
+                    ? '''
+شدة الزلزال
+     ${maxforce.toStringAsFixed(2)}
+'''
+                    : '''The Forse of earthquake
                  ${maxforce.toStringAsFixed(2)}''',
                 style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                     TextStyle(fontSize: 20+size.toDouble(), fontWeight: FontWeight.bold,),
               )
           ],
         ),

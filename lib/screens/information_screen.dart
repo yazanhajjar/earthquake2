@@ -1,7 +1,10 @@
 import 'package:earthquake_protection/models/education.dart';
+import 'package:earthquake_protection/providers/languagenumber.dart';
+import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class InformationScreen extends StatefulWidget {
+class InformationScreen extends ConsumerStatefulWidget {
   const InformationScreen(
       {super.key,
       required this.title,
@@ -11,14 +14,17 @@ class InformationScreen extends StatefulWidget {
   final List<InformationList> information;
   final Widget screen;
   @override
-  State<InformationScreen> createState() => _InformationScreenState();
+  ConsumerState<InformationScreen> createState() => _InformationScreenState();
 }
 
-class _InformationScreenState extends State<InformationScreen> {
+class _InformationScreenState extends ConsumerState<InformationScreen> {
   int number = 0;
 
   @override
   Widget build(BuildContext context) {
+    int languagenumber = ref.read(languagenumberProvider);
+    int size = ref.read(textsizeProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
@@ -46,16 +52,20 @@ class _InformationScreenState extends State<InformationScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(fit: BoxFit.contain,
+                        child: Image.asset(
+                          fit: BoxFit.contain,
                           widget.information[number].image,
                         ),
-                      ),const SizedBox(height: 8,),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
                       Text(
                         widget.information[number].text,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 20),
+                            fontSize: 20+size.toDouble()),
                       )
                     ],
                   ),
@@ -87,7 +97,7 @@ class _InformationScreenState extends State<InformationScreen> {
                     width: 50,
                   ),
                   Text(
-                    '${number + 1} of ${widget.information.length}',
+                    '${number + 1} __ ${widget.information.length}',
                     style: TextStyle(
                         fontSize: 40,
                         color: Theme.of(context).colorScheme.secondaryFixedDim),
@@ -126,8 +136,8 @@ class _InformationScreenState extends State<InformationScreen> {
                 },
                 style: const ButtonStyle(
                     fixedSize: WidgetStatePropertyAll(Size(300, 50))),
-                child: const Text(
-                  'go to the quiz',
+                child: Text(
+                  languagenumber == 0 ? 'go to the quiz' : 'اذهب للإختبار',
                   style: TextStyle(fontSize: 25),
                 ),
               ),
