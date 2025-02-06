@@ -1,12 +1,16 @@
 import 'package:earthquake_protection/earthquakelist.dart';
 import 'package:earthquake_protection/education_screen.dart';
 import 'package:earthquake_protection/mapscreen.dart';
+import 'package:earthquake_protection/models/storage.dart';
+import 'package:earthquake_protection/providers/auth.dart';
 import 'package:earthquake_protection/providers/language.dart';
 import 'package:earthquake_protection/providers/languagenumber.dart';
 import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/pagenumber.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
+import 'package:earthquake_protection/screens/apperplan.dart';
 import 'package:earthquake_protection/screens/emergency.dart';
+import 'package:earthquake_protection/screens/login.dart';
 import 'package:earthquake_protection/screens/mesure_screen.dart';
 import 'package:earthquake_protection/screens/settingscreen.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +41,12 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     int languagenumber = ref.watch(languagenumberProvider);
     int currentpagenumber = ref.watch(pagenumberProvider);
+    bool mode = ref.watch(lightProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor: mode
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : const Color.fromRGBO(0, 180, 216, 1),
         title: Title(
             color: Theme.of(context).colorScheme.primaryFixed,
             child: const Text(
@@ -47,7 +54,8 @@ class _HomeState extends ConsumerState<Home> {
               style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
             )),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor:
+          mode ? Theme.of(context).colorScheme.primary :  Color(0xf0f0f0f0),
       drawer: const MainDrawer(),
       body: ref.watch(pagenumberProvider) == 0
           ? const Listofearthquakes()
@@ -56,7 +64,9 @@ class _HomeState extends ConsumerState<Home> {
               : const EducationScreen(),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Theme.of(context).colorScheme.surface,
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor: mode
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : Color.fromRGBO(0, 180, 216, 1),
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.list, size: currentpagenumber == 0 ? 35 : 25),
@@ -92,19 +102,30 @@ class MainDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Map thetext = ref.watch(languageProvider);
     int size = ref.watch(textsizeProvider);
-
+    bool mode = ref.watch(lightProvider);
     return Drawer(
-      backgroundColor: ref.read(lightProvider)
+      backgroundColor: mode
           ? Theme.of(context).colorScheme.primaryFixedDim
-          : Theme.of(context).colorScheme.secondaryFixedDim,
+          : Color(0xf0f0f0f0),
       child: Column(
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-              Theme.of(context).colorScheme.secondary,
-              Theme.of(context).colorScheme.secondary.withAlpha(128)
-            ], end: Alignment.topCenter, begin: Alignment.bottomCenter)),
+                gradient: LinearGradient(
+                    colors: mode
+                        ? [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context)
+                                .colorScheme
+                                .secondary
+                                .withAlpha(128)
+                          ]
+                        : [
+                            Color.fromRGBO(0, 119, 182, 1),
+                            Color.fromRGBO(4, 94, 211, 1)
+                          ],
+                    end: Alignment.topCenter,
+                    begin: Alignment.bottomCenter)),
             child: const Row(
               children: [
                 Icon(
@@ -144,6 +165,20 @@ class MainDrawer extends ConsumerWidget {
                 style: TextStyle(fontSize: 15 + size.toDouble()),
               )),
           ListTile(
+              leading: const Icon(Icons.maps_ugc_rounded),
+              onTap: () {
+                Navigator.pop(context);
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (ctx) => const Apperplan()));
+              },
+              title: Text(
+                thetext['Plan'],
+                style: TextStyle(fontSize: 15 + size.toDouble()),
+              )),
+          ListTile(
               leading: const Icon(Icons.settings),
               onTap: () {
                 Navigator.pop(context);
@@ -153,6 +188,21 @@ class MainDrawer extends ConsumerWidget {
               },
               title: Text(
                 thetext['settings'],
+                style: TextStyle(fontSize: 15 + size.toDouble()),
+              )),
+          ListTile(
+              leading: const Icon(Icons.logout),
+              onTap: () async {
+                Navigator.pop(context);
+
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (ctx) => const Login()));
+                ref.watch(loginProvider.notifier).changingloginstate();
+
+                await Storage.setvalue('login', false);
+              },
+              title: Text(
+                thetext['languagenumber'] == '0' ? 'logout' : 'تسجيل الخروج',
                 style: TextStyle(fontSize: 15 + size.toDouble()),
               )),
         ],

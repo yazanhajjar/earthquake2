@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+import 'package:earthquake_protection/providers/force.dart';
 import 'package:earthquake_protection/providers/language.dart';
 import 'package:earthquake_protection/providers/languagenumber.dart';
 import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 class Settingscreen extends ConsumerWidget {
   const Settingscreen({super.key});
@@ -15,27 +19,32 @@ class Settingscreen extends ConsumerWidget {
     Set<int> selectedValue = {languagenumber};
     Set<int> selectedsize = {size};
     bool light = ref.watch(lightProvider);
-    int force = 1;
+    int force = ref.watch(forceProvider);
 
-
-
-Widget mytitle(BuildContext context, String title) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Text(
-      title,
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20+size.toDouble()),
-    ),
-  );
-}
-
+    Widget mytitle(BuildContext context, String title) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          title,
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 20 + size.toDouble()),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
-        title: Text(languagenumber == 0 ? 'Settings' : 'الإعدادات',style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: light
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : const Color.fromRGBO(0, 180, 216, 1),
+        title: Text(
+          languagenumber == 0 ? 'Settings' : 'الإعدادات',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: light
+          ? Theme.of(context).colorScheme.primary
+          : Color.fromRGBO(202, 240, 248, 1),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         mytitle(context, languagenumber == 0 ? 'language' : 'اللغة'),
         SegmentedButton(
@@ -43,12 +52,16 @@ Widget mytitle(BuildContext context, String title) {
             ButtonSegment(
                 value: 0,
                 label: Text('English',
-                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15+size.toDouble()))),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 + size.toDouble()))),
             ButtonSegment(
                 value: 1,
                 label: Text(
                   'عربي',
-                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15+size.toDouble()),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15 + size.toDouble()),
                 ))
           ],
           selected: selectedValue,
@@ -70,7 +83,8 @@ Widget mytitle(BuildContext context, String title) {
           leading: Icon(Icons.dark_mode),
           title: Text(
             languagenumber == 0 ? ' Dark Mode' : 'الوضع الليلي',
-            style: TextStyle(fontSize: 15+size.toDouble(), fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 15 + size.toDouble(), fontWeight: FontWeight.bold),
           ),
           trailing: Switch(
             activeTrackColor: Colors.green,
@@ -92,7 +106,8 @@ Widget mytitle(BuildContext context, String title) {
             languagenumber == 0
                 ? 'Select a value to alert at :'
                 : 'اختر قيمة للتنبه عندها ',
-            style: TextStyle(fontSize: 15+size.toDouble(), fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 15 + size.toDouble(), fontWeight: FontWeight.bold),
           ),
           trailing: SizedBox(
             height: 35,
@@ -132,11 +147,25 @@ Widget mytitle(BuildContext context, String title) {
                     child: Text('6+', textAlign: TextAlign.center),
                   ),
                 ],
-                onChanged: (newval) {
+                onChanged: (newval) async {
                   if (newval == null) {
                     return;
                   } else {
                     force = newval;
+                    ref.read(forceProvider.notifier).setForce(newval);
+                    try {
+                      var response = await http.post(
+                        Uri.https(
+                            'osama-un0e.onrender.com', 'api/user/settings/add'),
+                        headers: {'Content-Type': 'application/json'},
+                        body: json.encode({'notification_intensity': newval}),
+                      );
+
+                      if (response.statusCode == 200) {
+                      } else {}
+                    } catch (e) {
+                      // print('Error occurred during post request: $e');
+                    }
                   }
                 }),
           ),
@@ -149,7 +178,8 @@ Widget mytitle(BuildContext context, String title) {
             Icon(Icons.format_size_rounded),
             Text(
               languagenumber == 0 ? ' Select Text Size' : 'اختر حجم الخط',
-              style: TextStyle(fontSize: 15+size.toDouble(), fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 15 + size.toDouble(), fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -157,19 +187,25 @@ Widget mytitle(BuildContext context, String title) {
           segments: [
             ButtonSegment(
                 value: -3,
-                label: Text(languagenumber == 0 ?'small':'صغير',
-                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15+size.toDouble()))),
+                label: Text(languagenumber == 0 ? 'small' : 'صغير',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15 + size.toDouble()))),
             ButtonSegment(
                 value: 0,
                 label: Text(
-                  languagenumber == 0 ?'medium':'متوسط',
-                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15+size.toDouble()),
+                  languagenumber == 0 ? 'medium' : 'متوسط',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15 + size.toDouble()),
                 )),
             ButtonSegment(
                 value: 3,
                 label: Text(
-                languagenumber == 0 ?  'large':'كبير',
-                  style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15+size.toDouble()),
+                  languagenumber == 0 ? 'large' : 'كبير',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15 + size.toDouble()),
                 ))
           ],
           selected: selectedsize,
@@ -182,4 +218,3 @@ Widget mytitle(BuildContext context, String title) {
     );
   }
 }
-

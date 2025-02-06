@@ -1,5 +1,6 @@
 import 'package:earthquake_protection/models/education.dart';
 import 'package:earthquake_protection/providers/languagenumber.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,16 +25,20 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
   Widget build(BuildContext context) {
     int languagenumber = ref.read(languagenumberProvider);
     int size = ref.read(textsizeProvider);
-
+    bool mode = ref.read(lightProvider);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mode
+          ? Theme.of(context).colorScheme.primary
+          : Color.fromRGBO(202, 240, 248, 1),
       appBar: AppBar(
         title: Text(
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
           widget.title,
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor: mode
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : const Color.fromRGBO(0, 180, 216, 1),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -42,7 +47,7 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
             Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(10),
-                height: 400,
+                height: 500,
                 width: 500,
                 decoration: BoxDecoration(
                     // color: Colors.black.withOpacity(0.4),
@@ -64,8 +69,11 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
                         widget.information[number].text,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 20+size.toDouble()),
+                            fontWeight: FontWeight.bold,
+                            color: mode
+                                ? Theme.of(context).colorScheme.onSecondary
+                                : Colors.black,
+                            fontSize: 20 + size.toDouble()),
                       )
                     ],
                   ),
@@ -78,10 +86,13 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
                 children: [
                   IconButton(
                     style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.secondaryFixedDim)),
+                        backgroundColor: WidgetStatePropertyAll(mode
+                            ? Theme.of(context).colorScheme.secondaryFixedDim
+                            : const Color.fromRGBO(0, 180, 216, 1))),
                     iconSize: 45,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: mode
+                        ? Theme.of(context).colorScheme.primary
+                        : Color.fromRGBO(202, 240, 248, 1),
                     onPressed: () {
                       if (number > 0) {
                         setState(() {
@@ -100,17 +111,22 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
                     '${number + 1} __ ${widget.information.length}',
                     style: TextStyle(
                         fontSize: 40,
-                        color: Theme.of(context).colorScheme.secondaryFixedDim),
+                        color: mode
+                            ? Theme.of(context).colorScheme.secondaryFixedDim
+                            : Colors.black),
                   ),
                   const SizedBox(
                     width: 50,
                   ),
                   IconButton(
                     style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.secondaryFixedDim)),
+                        backgroundColor: WidgetStatePropertyAll(mode
+                            ? Theme.of(context).colorScheme.secondaryFixedDim
+                            : const Color.fromRGBO(0, 180, 216, 1))),
                     iconSize: 45,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: mode
+                        ? Theme.of(context).colorScheme.primary
+                        : Color.fromRGBO(202, 240, 248, 1),
                     onPressed: () {
                       if (number < widget.information.length - 1) {
                         setState(() {
@@ -134,11 +150,17 @@ class _InformationScreenState extends ConsumerState<InformationScreen> {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (ctx) => widget.screen));
                 },
-                style: const ButtonStyle(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(mode
+                        ? Theme.of(context).colorScheme.secondaryFixedDim
+                        : Color.fromRGBO(0, 180, 216, 1)),
                     fixedSize: WidgetStatePropertyAll(Size(300, 50))),
                 child: Text(
                   languagenumber == 0 ? 'go to the quiz' : 'اذهب للإختبار',
-                  style: TextStyle(fontSize: 25),
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color:mode?Colors.white: Colors.black),
                 ),
               ),
           ],

@@ -1,7 +1,10 @@
+import 'package:earthquake_protection/models/storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LanguageNotifier extends StateNotifier<Map> {
-  LanguageNotifier() : super(_englishMap);
+  LanguageNotifier()
+      : super(
+            Storage.pref.get('languagenumber') == 0 ? _englishMap : _arabicMap);
 
   static const Map _arabicMap = {
     'languagenumber': '1',
@@ -24,7 +27,8 @@ class LanguageNotifier extends StateNotifier<Map> {
     'mesurephrase': 'للحصول على نتائج جيدة ضع الهاتف على مكان صلب و أضعط بدأ',
     'Earthquake mesuring': 'قياس شدة الزلزال',
     'Emergency Places': 'أماكن الطوارئ',
-    'title': 'شاشة الإعدادات'
+    'title': 'شاشة الإعدادات',
+    'Plan': 'الخطة'
   };
   static const Map _englishMap = {
     'languagenumber': '0',
@@ -49,6 +53,7 @@ class LanguageNotifier extends StateNotifier<Map> {
     'Earthquake mesuring': 'Earthquake mesuring',
     'Emergency Places': 'Emergency Places',
     'title': 'setting screen',
+    'Plan': 'Plan'
   };
 
   void changeLanguage(String language) {

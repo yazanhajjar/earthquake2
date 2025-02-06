@@ -1,5 +1,6 @@
 import 'package:earthquake_protection/models/emergencylist.dart';
 import 'package:earthquake_protection/providers/language.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/markers.dart';
 import 'package:earthquake_protection/providers/pagenumber.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
@@ -14,15 +15,20 @@ class EmergencyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Map thetext = ref.read(languageProvider);
     int size = ref.read(textsizeProvider);
+    bool mode = ref.read(lightProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor: mode
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : const Color.fromRGBO(0, 180, 216, 1),
         title: Text(
           thetext['Emergency Places'],
           style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
         ),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mode
+          ? Theme.of(context).colorScheme.primary
+          : Color.fromRGBO(202, 240, 248, 1),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -77,9 +83,9 @@ class EmergencyScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   e.name,
-                                  style:  TextStyle(
+                                  style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 24+size.toDouble(),
+                                    fontSize: 24 + size.toDouble(),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -88,17 +94,17 @@ class EmergencyScreen extends ConsumerWidget {
                                   children: [
                                     Text(
                                       e.location,
-                                      style:  TextStyle(
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16+size.toDouble(),
+                                        fontSize: 16 + size.toDouble(),
                                       ),
                                     ),
                                     const SizedBox(width: 16),
                                     Text(
                                       'phone: ${e.phone}',
-                                      style:  TextStyle(
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16+size.toDouble(),
+                                        fontSize: 16 + size.toDouble(),
                                       ),
                                     ),
                                   ],

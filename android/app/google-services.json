@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "629949559507",
+    "project_id": "earthquake-notifications",
+    "storage_bucket": "earthquake-notifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629949559507:android:76a0380da765ead8b41a26",
+        "android_client_info": {
+          "package_name": "com.example.earthquake_protection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAw3Kc0BkqQ7E3eEydLTyP5clulTGEU03Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

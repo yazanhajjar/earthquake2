@@ -13,7 +13,7 @@ class Medicalquiz extends ConsumerWidget {
 
     return Quizscreen(
       title:
-          languagenumber == 0 ? 'first aid Quiz' : 'اختبار الإسعافات الأولية',
+          languagenumber == 0 ? 'first aid Quiz' : 'اختبار الإسعافات ',
       question: languagenumber == 0 ? medicalQuestion : medicalQuestionarabic,
     );
   }

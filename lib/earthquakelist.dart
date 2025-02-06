@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:earthquake_protection/models/earthquakelist.dart';
 import 'package:earthquake_protection/providers/language.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/markers.dart';
 import 'package:earthquake_protection/providers/pagenumber.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
@@ -23,8 +24,8 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
   late TabController _tabController;
 
   var url =
-      Uri.https('earthquake-438618-default-rtdb.firebaseio.com', 'force.json');
-  Map loadedData = {};
+      Uri.https('osama-un0e.onrender.com', 'api/sensor-data');
+  List<dynamic> loadedData = [];
 
   loadinglist() async {
     http.Response respone = await http.get(
@@ -33,15 +34,16 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
     loadedData = json.decode(respone.body);
 
     setState(() {
-      for (final item in loadedData.entries) {
+      for (final item in loadedData) {
         earthquakeList.add(Earthquake(
-            time: DateTime.parse(item.value['Date']),
-            force: double.parse(item.value['theforce']),
-            location: item.value['location'].toString(),
-            latLng: const LatLng(0, 0)));
+            time: DateTime.parse(item['time_happend']),
+            force: item['intensity'].toDouble(),
+            location: item['location'].toString()=='Unknown Location'?'syria_homs':item['location'].toString(),
+            latLng: const LatLng(35.69059124387986, 37.66976991898514)));
       }
     });
   }
+
 
   @override
   void initState() {
@@ -74,7 +76,8 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
   @override
   Widget build(BuildContext context) {
     Map thetext = ref.watch(languageProvider);
-        int size=ref.watch(textsizeProvider);
+    int size = ref.watch(textsizeProvider);
+    bool mode=ref.watch(lightProvider);
 
     final List<Tab> ourtabs = [
       const Tab(
@@ -105,7 +108,7 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
           labelColor: Theme.of(context).colorScheme.onPrimary,
           tabs: thetext['languagenumber'] == '0' ? ourtabs : ourtabsarbic,
           controller: _tabController,
-          labelStyle: TextStyle(fontSize: 15+size.toDouble()),
+          labelStyle: TextStyle(fontSize: 15 + size.toDouble()),
         ),
         Expanded(
           child: TabBarView(controller: _tabController, children: [
@@ -123,7 +126,8 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
                         Text(
                           thetext['Select the force :'],
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16+size.toDouble()),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16 + size.toDouble()),
                         ),
                         const SizedBox(
                           width: 20,
@@ -132,8 +136,10 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
                           height: 35,
                           width: 100,
                           child: DropdownButton(
-                              focusColor: Theme.of(context).colorScheme.secondary,
-                              dropdownColor: Theme.of(context).colorScheme.onPrimaryFixed,
+                              focusColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              dropdownColor:mode?
+                                  Theme.of(context).colorScheme.onPrimaryFixed:Color(0xf0f0f0f0),
                               borderRadius: BorderRadius.circular(10),
                               hint: Text('$filterforce+',
                                   textAlign: TextAlign.center),
@@ -210,14 +216,16 @@ class _ListofearthquakesState extends ConsumerState<Listofearthquakes>
                                   Theme.of(context).colorScheme.onPrimaryFixed),
                           child: Text(
                             thetext['Select Year'],
-                            style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
                           ),
                         ),
                       ),
                       Text(
                         "${thetext['Selected Year:']} ${filtertime.year}",
-                        style:  TextStyle(
-                            fontSize: 20+size.toDouble(), fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20 + size.toDouble(),
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -246,6 +254,7 @@ class Tabwidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool mode = ref.watch(lightProvider);
     return SingleChildScrollView(
       child: Column(children: [
         ...myearthquakes.map((e) => InkWell(
@@ -263,7 +272,7 @@ class Tabwidget extends ConsumerWidget {
                     );
               },
               child: Card(
-                color: Theme.of(context).colorScheme.secondaryFixedDim,
+                color: mode?Theme.of(context).colorScheme.secondaryFixedDim:Color.fromRGBO(0, 119, 182 ,1),
                 margin: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +291,9 @@ class Tabwidget extends ConsumerWidget {
                         e.force.toString(),
                         textAlign: TextAlign.center,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black,fontSize: 15),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 15),
                       ),
                     ),
                     Row(children: [
@@ -292,15 +303,15 @@ class Tabwidget extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(e.time.toString(),
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold,fontSize: 15)),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15)),
                       ),
                       const Spacer(),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(e.location,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold,fontSize: 17)),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 17)),
                       )
                     ])
                   ],

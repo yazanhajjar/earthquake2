@@ -1,5 +1,6 @@
 import 'package:earthquake_protection/models/the_question.dart';
 import 'package:earthquake_protection/providers/languagenumber.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,8 +37,8 @@ class Resultscreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     int languagenumber = ref.read(languagenumberProvider);
-        int size=ref.read(textsizeProvider);
-
+    int size = ref.read(textsizeProvider);
+    bool mode=ref.read(lightProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -46,8 +47,8 @@ class Resultscreen extends ConsumerWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
             textAlign: TextAlign.center,
           ),
-          backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: mode?Theme.of(context).colorScheme.secondaryFixedDim:const Color.fromRGBO(0, 180, 216, 1)),
+      backgroundColor: mode?Theme.of(context).colorScheme.primary: Color.fromRGBO(202, 240, 248,1),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -58,14 +59,15 @@ class Resultscreen extends ConsumerWidget {
                       ? 'You answerd $numcorrect correct of ${questions.length} '
                       : 'لقد أجبت بشكل صحيح على $numcorrect من ${questions.length}',
                   textAlign: TextAlign.center,
-                  style:  TextStyle(
-                      fontSize: 30+size.toDouble(), fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 30 + size.toDouble(),
+                      fontWeight: FontWeight.bold)),
               ...summary.map((e) => Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(30)),
                       color: e['index'] % 2 == 0
-                          ? Theme.of(context).colorScheme.onPrimaryFixedVariant
-                          : Theme.of(context).colorScheme.onPrimaryFixed,
+                          ? mode?Theme.of(context).colorScheme.onPrimaryFixedVariant:const Color.fromRGBO(0, 150, 199 ,1)
+                          : mode?Theme.of(context).colorScheme.onPrimaryFixed:const Color.fromRGBO(2, 62, 138, 1),
                     ),
                     margin: const EdgeInsets.all(10),
                     padding: const EdgeInsets.all(10),
@@ -78,7 +80,9 @@ class Resultscreen extends ConsumerWidget {
                           child: Text(
                             e['index'].toString(),
                             textAlign: TextAlign.center,
-                            style:  TextStyle(color: Colors.white,fontSize: 15+size.toDouble()),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15 + size.toDouble()),
                           ),
                         ),
                         Column(
@@ -89,8 +93,9 @@ class Resultscreen extends ConsumerWidget {
                                   ? 'The question : ${e['question']}'
                                   : 'السؤال : ${e['question']}  ',
                               style: TextStyle(
-                                  fontSize: 22+size.toDouble(),
-                                  color: Theme.of(context).colorScheme.onSecondary,
+                                  fontSize: 22 + size.toDouble(),
+                                  color:
+                                      Theme.of(context).colorScheme.onSecondary,
                                   // color: e['index'] % 2 != 0
                                   //     ? const Color.fromARGB(255, 113, 113, 113)
                                   //     : const Color.fromARGB(255, 5, 4, 4),
@@ -102,8 +107,8 @@ class Resultscreen extends ConsumerWidget {
                                 languagenumber == 0
                                     ? 'The correct Answer : ${e['correctAnswer']}'
                                     : 'الإجابة الصحيحة : ${e['correctAnswer']}',
-                                style:  TextStyle(
-                                    fontSize: 20+size.toDouble(),
+                                style: TextStyle(
+                                    fontSize: 20 + size.toDouble(),
                                     color: Color.fromARGB(255, 252, 234, 175)),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 10),
@@ -111,8 +116,9 @@ class Resultscreen extends ConsumerWidget {
                                 languagenumber == 0
                                     ? 'your Answer : ${e['userAnswer']}'
                                     : 'إجابتك: ${e['userAnswer']}',
-                                style:  TextStyle(
-                                    fontSize: 20+size.toDouble(), color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: 20 + size.toDouble(),
+                                    color: Colors.white),
                                 textAlign: TextAlign.center),
                           ],
                         ),

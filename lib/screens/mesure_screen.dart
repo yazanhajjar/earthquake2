@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:earthquake_protection/providers/language.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,7 +95,8 @@ class _MesureScreenState extends ConsumerState<MesureScreen> {
   @override
   Widget build(BuildContext context) {
     Map thetext = ref.read(languageProvider);
-        int size=ref.read(textsizeProvider);
+    int size = ref.read(textsizeProvider);
+    bool mode = ref.watch(lightProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -102,9 +104,12 @@ class _MesureScreenState extends ConsumerState<MesureScreen> {
           thetext['Earthquake mesuring'],
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
         ),
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor: mode
+            ? Theme.of(context).colorScheme.secondaryFixedDim
+            : const Color.fromRGBO(0, 180, 216, 1),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor:
+          mode ? Theme.of(context).colorScheme.primary :  Color.fromRGBO(202, 240, 248,1),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,7 +122,7 @@ class _MesureScreenState extends ConsumerState<MesureScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 20+size.toDouble(),
+                    fontSize: 20 + size.toDouble(),
                     color: Theme.of(context).colorScheme.scrim),
               ),
             ),
@@ -161,26 +166,29 @@ class _MesureScreenState extends ConsumerState<MesureScreen> {
                 ? ElevatedButton(
                     onPressed: stoptimer,
                     style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.secondaryFixedDim)),
+                        backgroundColor: WidgetStatePropertyAll(mode
+                            ? Theme.of(context).colorScheme.secondaryFixedDim
+                            : const Color.fromRGBO(0, 180, 216, 1))),
                     child: Text(
                       thetext['End mesuring'],
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.onSecondaryFixed,
-                          fontWeight: FontWeight.bold,fontSize: 20+size.toDouble()),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20 + size.toDouble()),
                     ),
                   )
                 : ElevatedButton(
                     style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
-                            Theme.of(context).colorScheme.secondaryFixedDim)),
+                        backgroundColor: WidgetStatePropertyAll(mode
+                            ? Theme.of(context).colorScheme.secondaryFixedDim
+                            : const Color.fromRGBO(0, 180, 216, 1))),
                     onPressed: _startTimer,
                     child: Text(thetext['Start mesuring'],
                         style: TextStyle(
                             color:
                                 Theme.of(context).colorScheme.onSecondaryFixed,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20+size.toDouble()))),
+                            fontSize: 20 + size.toDouble()))),
             const SizedBox(
               height: 15,
             ),
@@ -216,8 +224,10 @@ class _MesureScreenState extends ConsumerState<MesureScreen> {
 '''
                     : '''The Forse of earthquake
                  ${maxforce.toStringAsFixed(2)}''',
-                style:
-                     TextStyle(fontSize: 20+size.toDouble(), fontWeight: FontWeight.bold,),
+                style: TextStyle(
+                  fontSize: 20 + size.toDouble(),
+                  fontWeight: FontWeight.bold,
+                ),
               )
           ],
         ),

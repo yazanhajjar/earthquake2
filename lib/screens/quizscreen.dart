@@ -1,4 +1,5 @@
 import 'package:earthquake_protection/models/the_question.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:earthquake_protection/screens/result.dart';
 import 'package:flutter/material.dart';
@@ -31,9 +32,10 @@ class _QuizscreenState extends ConsumerState<Quizscreen> {
   @override
   Widget build(BuildContext context) {
     int size = ref.read(textsizeProvider);
+    bool mode=ref.read(lightProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
+        backgroundColor:mode? Theme.of(context).colorScheme.secondaryFixedDim:const Color.fromRGBO(0, 180, 216, 1),
         title: Title(
             color: Theme.of(context).colorScheme.onSurface,
             child: Text(
@@ -42,7 +44,7 @@ class _QuizscreenState extends ConsumerState<Quizscreen> {
               style: TextStyle(fontSize: 30+size.toDouble(), fontWeight: FontWeight.bold),
             )),
       ),
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: mode?Theme.of(context).colorScheme.primary: Color.fromRGBO(202, 240, 248,1),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -78,9 +80,9 @@ class _QuizscreenState extends ConsumerState<Quizscreen> {
                               }
                             });
                           },
-                          style: const ButtonStyle(
+                          style:  ButtonStyle(
                               backgroundColor: WidgetStatePropertyAll(
-                                  Color.fromARGB(255, 50, 41, 41)),
+                                mode?  Color.fromARGB(255, 50, 41, 41):Color.fromRGBO(2, 62, 138, 1)),
                               padding:
                                   WidgetStatePropertyAll(EdgeInsets.all(20))),
                           child: Text(
