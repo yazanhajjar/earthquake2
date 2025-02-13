@@ -1,4 +1,5 @@
 import 'package:earthquake_protection/providers/language.dart';
+import 'package:earthquake_protection/providers/light.dart';
 import 'package:earthquake_protection/providers/textsize.dart';
 import 'package:earthquake_protection/screens/earthquake_education.dart';
 import 'package:earthquake_protection/screens/earthquakequiz.dart';
@@ -13,22 +14,25 @@ class EducationScreen extends ConsumerWidget {
   const EducationScreen({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref)  {
-    Map thetext=ref.watch(languageProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    Map thetext = ref.watch(languageProvider);
     return Container(
       margin: const EdgeInsets.fromLTRB(1, 10, 1, 10),
       child: GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, childAspectRatio: 2.5 / 2),
-        children:  [
+        children: [
           MyContainer(
             title: thetext['Earthquake Prevention'],
             screen: EarthquakeEducation(),
           ),
           MyContainer(
-              title: thetext['Earthquake Prevention quiz'], screen: Earthquakequiz()),
-          MyContainer(title: thetext['Fire prevention'], screen: FireEducation()),
-          MyContainer(title: thetext['Fire prevention quiz'], screen: Firequiz()),
+              title: thetext['Earthquake Prevention quiz'],
+              screen: Earthquakequiz()),
+          MyContainer(
+              title: thetext['Fire prevention'], screen: FireEducation()),
+          MyContainer(
+              title: thetext['Fire prevention quiz'], screen: Firequiz()),
           MyContainer(title: thetext['First aid'], screen: Medicaleducation()),
           MyContainer(title: thetext['First aid quiz'], screen: Medicalquiz())
         ],
@@ -43,8 +47,9 @@ class MyContainer extends ConsumerWidget {
   final Widget screen;
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-        int size=ref.watch(textsizeProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    int size = ref.watch(textsizeProvider);
+    bool mode = ref.watch(lightProvider);
 
     return InkWell(
       onTap: () {
@@ -53,17 +58,34 @@ class MyContainer extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: Colors.black.withValues(alpha: 0.5),
+          gradient: LinearGradient(
+            colors: mode
+                ? [Colors.blueGrey, Colors.grey]
+                : [Colors.blue, Colors.purple],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(50),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
-        margin: const EdgeInsets.all(4),
+        margin: const EdgeInsets.all(8),
         child: Center(
-          child: Text(
-            title,
-            style:  TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 18+size.toDouble(),
-            ),textAlign: TextAlign.center,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18 + size.toDouble(),
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

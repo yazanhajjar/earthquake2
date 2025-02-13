@@ -32,6 +32,7 @@ class _LoginState extends ConsumerState<Login> {
         },
         body: jsonEncode(<String, String>{
           'token': token,
+          'intensity':'1'
         }),
       );
 
@@ -59,7 +60,7 @@ class _LoginState extends ConsumerState<Login> {
         Uri.https('osama-un0e.onrender.com', 'api/user/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'Email': useremail,
+          'email': useremail,
           'password': userpassword.hashCode.toString(),
         }),
       );
@@ -91,11 +92,11 @@ class _LoginState extends ConsumerState<Login> {
     try {
       http.Response respon = await http.post(
         Uri.https('osama-un0e.onrender.com', 'api/user/register'),
-        headers: {'Content-Type': 'application/json'},
+        headers: <String,String>{'Content-Type': 'application/json'},
         body: json.encode({
-          'Email': useremail,
+          'username': username,
+          'email': useremail,
           'password': userpassword.hashCode.toString(),
-          'Name': username
         }),
       );
 
